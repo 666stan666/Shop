@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+<link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="font-awesome/css/font-awesome.min.css">
+<link href="https://fonts.googleapis.com/css?family=Nunito" rel="stylesheet">
+</head>
+<body>
+<div class="row">
+	<ul class="menu">
+		<li class="menu-button"><a href="#">Shopping List</a></li>
+		<li class="menu-button"><a href="#">Done</a></li>
+		<li class="menu-button"><a href="#">Deleted</a></li>
+	</ul>
+	<div class="container">
+		<div class="table-head">
+			<h1>Shopping List</h1>
+			<hr>
+			<input class ="field items" type="text" placeholder="Add items for you shopping List" name="items">
+			<input class="field quant" type="text" placeholder="Quant." name="quant">
+			<input class="field price" type="text" placeholder="Price" name="price">
+			<button class="field add">Add</button>
+			<button class="field update">Update</button>
+		</div class="table-head">
+		<table id="table">
+			<thead>
+				<th>#</th>
+				<th>Done</th>
+				<th>Item</th>
+				<th>Quantity</th>
+				<th>Price $</th>
+				<th>Action</th>
+			</thead>
+			<tfoot>
+				<tr>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td>Total:</td>
+				<td class="total-cell">0</td>
+				</tr>
+			</tfoot>
+		</table>
+	</div>
+</div>
+<script src ="main.js"></script>	
+</html>
+
