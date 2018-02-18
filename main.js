@@ -11,11 +11,15 @@ const priceField = document.querySelector(".price");
 const fields = document.querySelector(".input-section");
 const shopping = document.querySelector(".shopping");
 
+
 addButton.addEventListener("click", addItems);
 updateButton.addEventListener("click", updateItems);
 table.addEventListener("click", clickButtons);
+
 menu.addEventListener("click", clickMenuButtons);
+
 shopping.classList.add("hover");
+
 
 let updateItemIndex = -1;
 let shoppingList = [];
@@ -49,6 +53,87 @@ function createSection() {
   delButton.classList.add("delete-button");
   tr.lastChild.appendChild(delButton);
 }
+function clickMenuButtons(event) {
+  if(!event.target.classList.contains("shopping") && !event.target.classList.contains("done") && !event.target.classList.contains("deleted")) {
+    return;
+  } else if(event.target.classList.contains("shopping")) {
+    showShoppingList();
+  } else if(event.target.classList.contains("done")) {
+    showDoneList();
+  } else if(event.target.classList.contains("deleted")) {
+    showDeletedList();
+  } else {
+    return;
+  }  
+
+  let elem = event.target;
+  let a = document.querySelectorAll("a");
+  for (let i = 0; i < a.length; i++) {
+    let link = a[i];
+      if (link != elem) {
+       link.classList.remove("hover");
+      }
+  }
+  elem.classList.add("hover");
+}
+
+function showShoppingList() {
+  h.innerHTML = "Shopping List";
+  fields.style.visibility = "";
+  title.style.height = "220px";
+  deleteBody();
+  if (shoppingList.length > 0) {
+    fillTable(shoppingList);
+  } else {
+  alert("Shopping list is empty");
+  }
+  countTotal(shoppingList);
+  return;
+}
+
+function showDeletedList() {
+  h.innerHTML = "Deleted Items";
+  hr.style.visibility = "hidden";
+  fields.style.visibility = "hidden";
+  title.style.height = "120px";
+  deleteBody();
+  if (delList.length > 0) {
+    fillTable(delList);
+    const editButton = document.querySelectorAll(".edit-button");
+    const deleteButton = document.querySelectorAll(".delete-button")
+    for (let i = 0; i < editButton.length; i++) {
+      editButton[i].style.visibility = "hidden";
+      deleteButton[i].classList.remove("delete-button");
+      deleteButton[i].classList.add("remove-del");
+    }  
+  } else {
+    alert('List "Deleted" is empty');
+  }
+  countTotal(delList);
+  return;
+}
+
+function showDoneList() {
+  h.innerHTML = "Done Items";
+  hr.style.visibility = "hidden";
+  fields.style.visibility = "hidden";
+  title.style.height = "120px";
+  deleteBody();
+  if (doneList.length > 0) {
+    fillTable(doneList);
+    const editButton = document.querySelectorAll(".edit-button");
+    const deleteButton = document.querySelectorAll(".delete-button")
+    for (let i = 0; i < editButton.length; i++) {
+      editButton[i].style.visibility = "hidden";
+      deleteButton[i].classList.remove("delete-button")
+      deleteButton[i].classList.add("remove-done");
+    }
+  } else {
+    alert('"Done list items" is empty');
+  }
+  countTotal(doneList);
+  return;
+}
 
 function clickButtons(event) {     
   let el = event.target.parentNode;
@@ -62,7 +147,7 @@ function clickButtons(event) {
     delList.push(shoppingList[index]);
     shoppingList.splice(index, 1);
     deleteBody();
-    fillTable.call(shoppingList);
+    fillTable(shoppingList);
 	} else if (event.target.classList.contains("edit-button")) {
         for (let i = 0; i < table.rows.length; i++) {
           const row = table.rows[i];
@@ -75,35 +160,33 @@ function clickButtons(event) {
       addButton.style.display = "none";
       updateItemIndex = index;
       itemsField.value = shoppingList[index].item;
-	  quantField.value = shoppingList[index].quantity;
+	    quantField.value = shoppingList[index].quantity;
       priceField.value = shoppingList[index].price;
     } else if(event.target.hasAttribute("type")) {
       el1.parentNode.removeChild(el1);
       doneList.push(shoppingList[index]);
       shoppingList.splice(index, 1);	
       deleteBody();
-      fillTable.call(shoppingList);	
+      fillTable(shoppingList);
     } else {
       return;
     }
-	countTotal.call(shoppingList);
+	countTotal(shoppingList);
 }
 
 function fillSection(arr) {
   const rows = table.lastChild;
-  arr = this;
   for (let i = 0; i < arr.length; i++) {
     rows.cells[0].innerHTML = i + 1;
     rows.cells[2].innerHTML = arr[i].item;
     rows.cells[3].innerHTML = arr[i].quantity;
     rows.cells[4].innerHTML = arr[i].price;
   } 
-  countTotal.call(shoppingList);
+  countTotal(shoppingList);
 }
 
 function countTotal(arr) {
   let sum = 0;
-  arr = this;
   for (let i = 0; i < arr.length; i++) {
   	sum += +arr[i].price;
   }
@@ -113,9 +196,9 @@ function countTotal(arr) {
 
 function addItems() {
   var itemNew = {
-    item:"",
-    quantity: "",
-    price: ""
+    "item":"",
+    "quantity": "",
+    "price": ""
   };
 
   if (itemsField.value && quantField.value && priceField.value) {
@@ -124,7 +207,7 @@ function addItems() {
     itemNew.price = priceField.value;
     shoppingList.push(itemNew);
     createSection();
-    fillSection.call(shoppingList);
+    fillSection(shoppingList);
     itemsField.value = quantField.value = priceField.value = null;
   } else {
     alert("Please, fill all fields");
@@ -133,7 +216,6 @@ function addItems() {
 
 function fillTable(arr) {
   let rows = table.rows;
-  arr = this;
   for (let i = 1; i < arr.length + 1; i++) {
     createSection();
     rows[i].cells[0].innerHTML = i;
@@ -168,83 +250,31 @@ function updateItems() {
   };
 
   deleteBody();
-  fillTable.call(shoppingList);
-  countTotal.call(shoppingList);
+  fillTable(shoppingList);
+  countTotal(shoppingList);
   this.style.display = "none";
   addButton.style.display = "";
   itemsField.value = quantField.value = priceField.value = null;
 }
 
-function clickMenuButtons(event) {
-  if(!event.target.classList.contains("shopping") && !event.target.classList.contains("done") && !event.target.classList.contains("deleted")) {
+function clickDelete() {
+  let elem = event.target.parentNode;
+  let index = elem.firstChild.innerHTML - 1;
+  if(!event.target.classList.contains("remove-done") && !event.target.classList.contains("remove-del")) {
     return;
-  } else if(event.target.classList.contains("shopping")) {
-  	showShoppingList();
-  } else if(event.target.classList.contains("done")) {
-  	showDoneList();
-  } else if(event.target.classList.contains("deleted")) {
-    showDeletedList();
+  } else if(event.target.classList.contains("remove-done")) {
+    elem.parentNode.removeChild(elem);
+    doneList.splice(index, 1);
+    deleteBody();
+    fillTable(doneList);  
+    countTotal(doneList);
+  } else if(event.target.classList.contains("remove-del")) {
+    elem.parentNode.removeChild(elem);
+    delList.splice(index, 1);
+    deleteBody();
+    fillTable(delList);
+    countTotal(delList);
   } else {
-  	return;
-  }  
-
-  let elem = event.target;
-  let a = document.querySelectorAll("a");
-  for (let i = 0; i < a.length; i++) {
-    let link = a[i];
-  	  if (link != elem) {
-  	   link.classList.remove("hover");
-      }
+    return;
   }
-  elem.classList.add("hover");
 }
-
-function showShoppingList() {
-  h.innerHTML = "Shopping List";
-  fields.style.display = "";
-  title.style.height = "220px";
-  deleteBody();
-  if (shoppingList.length > 0) {
-    fillTable.call(shoppingList);
-  } else {
- 	alert("Shopping list is empty");
-  }
-  countTotal.call(shoppingList);
-  return;
-}
-
-function showDeletedList() {
-  h.innerHTML = "Deleted Items";
-  hr.style.display = "none";
-  fields.style.display = "none";
-  title.style.height = "120px";
-  deleteBody();
-  if (delList.length > 0) {
-    fillTable.call(delList);
-  } else {
-   	alert('List "Deleted" is empty');
-  }
-  countTotal.call(delList);
-  return;
-}
-
-function showDoneList() {
-  h.innerHTML = "Done Items";
-  hr.style.display = "none";
-  fields.style.display = "none";
-  title.style.height = "120px";
-  deleteBody();
-  if (doneList.length > 0) {
-    fillTable.call(doneList);
-  } else {
-    alert('List "Done" is empty');
-  }
-  countTotal.call(doneList);
-  return;
-}
-
-
-
-
-
-
