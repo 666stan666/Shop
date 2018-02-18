@@ -9,20 +9,23 @@
 </head>
 <body>
 <div class="row">
-	<ul class="menu">
-		<li class="menu-button"><a href="#">Shopping List</a></li>
-		<li class="menu-button"><a href="#">Done</a></li>
-		<li class="menu-button"><a href="#">Deleted</a></li>
-	</ul>
+	<div class="menu">
+		<ul>
+			<li><a href="#" class="shopping">Shopping List</a></li>
+			<li><a href="#"  class="done">Done</a></li>
+			<li><a href="#" class="deleted">Deleted</a></li>
+		</ul>
+	</div>
 	<div class="container">
-		<div class="table-head">
+		<div class="title">
 			<h1>Shopping List</h1>
 			<hr>
-			<input class ="field items" type="text" placeholder="Add items for you shopping List" name="items">
-			<input class="field quant" type="text" placeholder="Quant." name="quant">
-			<input class="field price" type="text" placeholder="Price" name="price">
-			<button data-action="update" class="update">Update</button><button data-action="add" class="add">Add</button>
-			
+			<div class="input-section">
+				<input class ="field items" type="text" placeholder="Add items for you shopping List" name="items">
+				<input class="field quant" type="text" placeholder="Quant." name="quant">
+				<input class="field price" type="text" placeholder="Price" name="price">
+				<button class="update">Update</button><button class="add">Add</button>
+			</div>
 		</div>
 		<table id="table">
 			<thead>
@@ -44,6 +47,26 @@
 				</tr>
 			</tfoot>
 		</table>
+<!-- 		<table id="table-deleted">
+			<thead>
+				<th>#</th>
+				<th>Done</th>
+				<th>Item</th>
+				<th>Quantity</th>
+				<th>Price $</th>
+				<th>Action</th>
+			</thead>
+			<tfoot>
+				<tr>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td></td>
+				<td>Total:</td>
+				<td class="total-cell">0</td>
+				</tr>
+			</tfoot>
+		</table> -->
 	</div>
 </div>
 <script src ="main.js"></script>	
