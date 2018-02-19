@@ -23,7 +23,7 @@ shopping.classList.add("hover");
 
 
 let updateItemIndex = -1;
-let shoppingList = [{"item": "Bread", "quantity": "1", "price": "1.99"}, {"item": "Milk", "quantity": "3l", "price": "3.25"}, {"item": "Eggs", "quantity": "10", "price": "2.99"},];
+let shoppingList = [];  //{"item": "Bread", "quantity": "1", "price": "1.99"}, {"item": "Milk", "quantity": "3l", "price": "3.25"}, {"item": "Eggs", "quantity": "10", "price": "2.99"}
 let doneList =[];
 let delList = [];
 let currentTable = "list";
@@ -107,8 +107,6 @@ function showShoppingList() {
   deleteBody();
   if (shoppingList.length > 0) {
     fillTable(shoppingList);
-    let sShop = JSON.stringify(shoppingList);
-    localStorage.setItem("shoppingList", sShop);
   } 
   countTotal(shoppingList);
   return;
@@ -128,7 +126,6 @@ function showDeletedList() {
     for (let i = 0; i < editButton.length; i++) {
       editButton[i].style.visibility = "hidden";
       deleteButton[i].classList.remove("delete-button");
-      deleteButton[i].classList.add("remove-del");
     }  
   }
   countTotal(delList);
@@ -151,7 +148,6 @@ function showDoneList() {
       editButton[i].style.visibility = "hidden";
       input.checked;
       deleteButton[i].classList.remove("delete-button")
-      deleteButton[i].classList.add("remove-done");
     }
   }
   countTotal(doneList);
@@ -324,11 +320,9 @@ let sShop = JSON.stringify(shoppingList);
 localStorage.setItem("shoppingList", sShop);
 let sDel = JSON.stringify(delList);
 localStorage.setItem("delList", sDel);
-let sDone = JSON.stringify(doneList)
+let sDone = JSON.stringify(doneList);
 localStorage.setItem("doneList", sDone);
 
 let restoreShoppingList = JSON.parse(localStorage.getItem("shoppingList"));
 let restoreDelList = JSON.parse(localStorage.getItem("delList"));
 let restoreDoneList = JSON.parse(localStorage.getItem("doneList"));
-console.log(sShop);
-console.log(restoreShoppingList);
