@@ -27,12 +27,23 @@ let shoppingList = [];  //{"item": "Bread", "quantity": "1", "price": "1.99"}, {
 let doneList =[];
 let delList = [];
 let currentTable = "list";
-fillTable(shoppingList);
-countTotal(shoppingList);
+let restoreShoppingList = JSON.parse(localStorage.getItem("shoppingList"));
+let restoreDelList = JSON.parse(localStorage.getItem("delList"));
+let restoreDoneList = JSON.parse(localStorage.getItem("doneList"));
 
 
+if (localStorage.getItem('shoppingList') !== null) {
+  shoppingList = restoreShoppingList;
+  fillTable(shoppingList);
+}
 
+if (localStorage.getItem('delList') !== null) {
+  delList = restoreDelList;
+}
 
+if (localStorage.getItem('doneList') !== null) {
+  doneList = restoreDoneList;
+}
 
 function createSection() {
   const tr = document.createElement("tr");
@@ -75,6 +86,7 @@ function createSection() {
   }
   tr.lastChild.appendChild(delButton);
 }
+
 function clickMenuButtons(event) {
   if(!event.target.classList.contains("shopping") && !event.target.classList.contains("done") && !event.target.classList.contains("deleted")) {
     return;
@@ -100,19 +112,22 @@ function clickMenuButtons(event) {
 }
 
 function showShoppingList() {
+
   currentTable = 'list'
   h.innerHTML = "Shopping List";
+  hr.style.visibility = "";
   fields.style.visibility = "";
   title.style.height = "220px";
   deleteBody();
   if (shoppingList.length > 0) {
     fillTable(shoppingList);
-  } 
+  }   
   countTotal(shoppingList);
   return;
 }
 
 function showDeletedList() {
+
   currentTable = 'deleted';
   h.innerHTML = "Deleted Items";
   hr.style.visibility = "hidden";
@@ -128,6 +143,9 @@ function showDeletedList() {
       deleteButton[i].classList.remove("delete-button");
     }  
   }
+  updateButton.style.display = "none";
+  addButton.style.display = "";
+  itemsField.value = quantField.value = priceField.value = null;
   countTotal(delList);
   return;
 }
@@ -150,6 +168,9 @@ function showDoneList() {
       deleteButton[i].classList.remove("delete-button")
     }
   }
+  updateButton.style.display = "none";
+  addButton.style.display = "";
+  itemsField.value = quantField.value = priceField.value = null;
   countTotal(doneList);
   return;
 }
@@ -162,12 +183,16 @@ function clickDelete(event) {
   } else if(event.target.classList.contains("remove-done")) {
     elem.parentNode.removeChild(elem);
     doneList.splice(index, 1);
+    let sDone = JSON.stringify(doneList);
+    localStorage.setItem("doneList", sDone);
     deleteBody();
     fillTable(doneList);  
     countTotal(doneList);
   } else if(event.target.classList.contains("remove-del")) {
     elem.parentNode.removeChild(elem);
     delList.splice(index, 1);
+    let sDel = JSON.stringify(delList);
+    localStorage.setItem("delList", sDel);
     deleteBody();
     fillTable(delList);
     countTotal(delList);
@@ -187,6 +212,10 @@ function clickButtons(event) {
     el1.parentNode.removeChild(el1);
     delList.push(shoppingList[index]);
     shoppingList.splice(index, 1);
+    let sShop = JSON.stringify(shoppingList); 
+    localStorage.setItem("shoppingList", sShop);
+    let sDel = JSON.stringify(delList);
+    localStorage.setItem("delList", sDel);
     deleteBody();
     fillTable(shoppingList);
     itemsField.value = quantField.value = priceField.value = null;
@@ -212,7 +241,11 @@ function clickButtons(event) {
       event.target.checked = true;
       el1.parentNode.removeChild(el1);
       doneList.push(shoppingList[index]);
-      shoppingList.splice(index, 1);	
+      let sDone = JSON.stringify(doneList);
+      localStorage.setItem("doneList", sDone);
+      shoppingList.splice(index, 1);
+      let sShop = JSON.stringify(shoppingList); 
+      localStorage.setItem("shoppingList", sShop);
       deleteBody();
       fillTable(shoppingList);
       updateButton.style.display = "none";
@@ -226,15 +259,10 @@ function clickButtons(event) {
 function fillSection(arr) {
   const rows = table.lastChild;
   for (let i = 0; i < arr.length; i++) {
-    if(typeof +arr[i].price !== "number") {
-      throw new TypeError("The entered price is not a number", "main.js", 196);
-      return;
-    } else {
       rows.cells[0].innerHTML = i + 1;
       rows.cells[2].innerHTML = arr[i].item;
       rows.cells[3].innerHTML = arr[i].quantity;
       rows.cells[4].innerHTML = arr[i].price;
-    }
   }  
   countTotal(shoppingList);
 }
@@ -249,23 +277,27 @@ function countTotal(arr) {
 }
 
 function addItems() {
-  var itemNew = {
+  let itemNew = {
     "item":"",
     "quantity": "",
     "price": ""
   };
-  if (isNumeric(priceField.value))  {
+  if (!isNumeric(priceField.value))  {
+    alert("Price value is not a number");
+    return;
+  } else if (!itemsField.value || !quantField.value ||!priceField.value) {
+    alert("Some fields not filled");
+    return;
+  } else {
     itemNew.item = itemsField.value;
     itemNew.quantity = quantField.value;
     itemNew.price = priceField.value;
     shoppingList.push(itemNew);
+    let sShop = JSON.stringify(shoppingList);
+    localStorage.setItem("shoppingList", sShop);
     createSection();
     fillSection(shoppingList);
     itemsField.value = quantField.value = priceField.value = null;
-  } else if (!itemsField.value || !quantField.value ||!priceField.value) {
-    alert("Some fields not filled");
-  } else {
-    alert("Price value is not a number");
   }
 }
 
@@ -315,14 +347,3 @@ function updateItems() {
 function isNumeric(n) {
   return !isNaN(parseFloat(n)) && isFinite(n);
 }
-
-let sShop = JSON.stringify(shoppingList);
-localStorage.setItem("shoppingList", sShop);
-let sDel = JSON.stringify(delList);
-localStorage.setItem("delList", sDel);
-let sDone = JSON.stringify(doneList);
-localStorage.setItem("doneList", sDone);
-
-let restoreShoppingList = JSON.parse(localStorage.getItem("shoppingList"));
-let restoreDelList = JSON.parse(localStorage.getItem("delList"));
-let restoreDoneList = JSON.parse(localStorage.getItem("doneList"));
