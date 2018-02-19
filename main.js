@@ -336,6 +336,8 @@ function updateItems() {
     price: priceField.value,
   };
 
+  let sShop = JSON.stringify(shoppingList);
+  localStorage.setItem("shoppingList", sShop);
   deleteBody();
   fillTable(shoppingList);
   countTotal(shoppingList);
