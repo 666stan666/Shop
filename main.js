@@ -10,6 +10,8 @@ const quantField = document.querySelector(".quant");
 const priceField = document.querySelector(".price");
 const fields = document.querySelector(".input-section");
 const shopping = document.querySelector(".shopping");
+const inputButton = document.querySelectorAll(".checkbox");
+
 
 addButton.addEventListener("click", addItems);
 updateButton.addEventListener("click", updateItems);
@@ -19,17 +21,24 @@ menu.addEventListener("click", clickMenuButtons);
 
 shopping.classList.add("hover");
 
+
 let updateItemIndex = -1;
-let shoppingList = [];
+let shoppingList = [{"item": "Bread", "quantity": "1", "price": "1.99"}, {"item": "Milk", "quantity": "3l", "price": "3.25"}, {"item": "Eggs", "quantity": "10", "price": "2.99"},];
 let doneList =[];
 let delList = [];
+let currentTable = "list";
+fillTable(shoppingList);
+countTotal(shoppingList);
+
+
+
 
 
 function createSection() {
   const tr = document.createElement("tr");
   const th = document.querySelectorAll("th");
   table.appendChild(tr);
-  tr.classList.add('newTr');
+  tr.classList.add("newTr");
 
   for (let i = 0; i < th.length; i++) {
     let td = document.createElement("td");
@@ -40,20 +49,32 @@ function createSection() {
   input.setAttribute("type", "checkbox");
   input.classList.add("checkbox");
   tr.cells[1].appendChild(input);
+  if (currentTable == "done" || currentTable == "deleted") {
+    input.checked = true;
+    input.classList.toggle("checkbox");
+  }
 
-  const editButton = document.createElement("button");
-  editButton.setAttribute("type", "button");
-  editButton.innerHTML = ("✎");
-  editButton.classList.add("edit-button");
-  tr.lastChild.appendChild(editButton);
+
+  if (currentTable == "list") {
+    const editButton = document.createElement("button");
+    editButton.setAttribute("type", "button");
+    editButton.innerHTML = ("✎");
+    editButton.classList.add("edit-button");
+    tr.lastChild.appendChild(editButton);
+  }
 
   const delButton = document.createElement("button");
   delButton.setAttribute("type", "button");
   delButton.innerHTML = ("×");
-  delButton.classList.add("delete-button");
+  if (currentTable == 'done') {
+    delButton.classList.add("remove-done");
+  } else if (currentTable == 'deleted') {
+    delButton.classList.add("remove-del");
+  } else {
+    delButton.classList.add("delete-button");
+  }
   tr.lastChild.appendChild(delButton);
 }
-
 function clickMenuButtons(event) {
   if(!event.target.classList.contains("shopping") && !event.target.classList.contains("done") && !event.target.classList.contains("deleted")) {
     return;
@@ -78,47 +99,67 @@ function clickMenuButtons(event) {
   elem.classList.add("hover");
 }
 
-function clickButtons(event) {     
-  let el = event.target.parentNode;
-  let el1 = el.parentNode;
-  let index = el1.firstChild.innerHTML - 1;
-  if (!event.target.classList.contains("delete-button") && !event.target.classList.contains("edit-button") 
-    && !event.target.classList.contains("checkbox")) {
-    return; 
-  } else if (event.target.classList.contains("delete-button")) {
-    el1.parentNode.removeChild(el1);
-    delList.push(shoppingList[index]);
-    shoppingList.splice(index, 1);
-    deleteBody();
+function showShoppingList() {
+  currentTable = 'list'
+  h.innerHTML = "Shopping List";
+  fields.style.visibility = "";
+  title.style.height = "220px";
+  deleteBody();
+  if (shoppingList.length > 0) {
     fillTable(shoppingList);
-  } else if (event.target.classList.contains("edit-button")) {
-        for (let i = 0; i < table.rows.length; i++) {
-          const row = table.rows[i];
-            if (row != el1) {
-              row.style.backgroundColor = '';
-            }
-       }
-      el1.style.backgroundColor = "#abdde5";
-      updateButton.style.display = 'inline';
-      addButton.style.display = "none";
-      updateItemIndex = index;
-      itemsField.value = shoppingList[index].item;
-      quantField.value = shoppingList[index].quantity;
-      priceField.value = shoppingList[index].price;
-    } else if(event.target.classList.contains("checkbox")) {
-      el.parentNode.removeChild(el);
-      doneList.push(shoppingList[index]);
-      shoppingList.splice(index, 1);  
-      deleteBody();
-      fillTable(shoppingList);
-    } else {
-      return;
-    }
+    let sShop = JSON.stringify(shoppingList);
+    localStorage.setItem("shoppingList", sShop);
+  } 
   countTotal(shoppingList);
+  return;
 }
 
-function clickDelete() {
-  let elem = event.target.parentNode;
+function showDeletedList() {
+  currentTable = 'deleted';
+  h.innerHTML = "Deleted Items";
+  hr.style.visibility = "hidden";
+  fields.style.visibility = "hidden";
+  title.style.height = "120px";
+  deleteBody();
+  if (delList.length > 0) {
+    fillTable(delList);
+    const editButton = document.querySelectorAll(".edit-button");
+    const deleteButton = document.querySelectorAll(".delete-button")
+    for (let i = 0; i < editButton.length; i++) {
+      editButton[i].style.visibility = "hidden";
+      deleteButton[i].classList.remove("delete-button");
+      deleteButton[i].classList.add("remove-del");
+    }  
+  }
+  countTotal(delList);
+  return;
+}
+
+function showDoneList() {
+  currentTable = 'done';
+  h.innerHTML = "Done Items";
+  hr.style.visibility = "hidden";
+  fields.style.visibility = "hidden";
+  title.style.height = "120px";
+  deleteBody();
+  if (doneList.length > 0) {
+    fillTable(doneList);
+    const editButton = document.querySelectorAll(".edit-button");
+    const deleteButton = document.querySelectorAll(".delete-button");
+    const input = document.querySelectorAll("checkbox")
+    for (let i = 0; i < editButton.length; i++) {
+      editButton[i].style.visibility = "hidden";
+      input.checked;
+      deleteButton[i].classList.remove("delete-button")
+      deleteButton[i].classList.add("remove-done");
+    }
+  }
+  countTotal(doneList);
+  return;
+}
+
+function clickDelete(event) {
+  let elem = event.target.parentNode.parentNode;
   let index = elem.firstChild.innerHTML - 1;
   if(!event.target.classList.contains("remove-done") && !event.target.classList.contains("remove-del")) {
     return;
@@ -134,87 +175,81 @@ function clickDelete() {
     deleteBody();
     fillTable(delList);
     countTotal(delList);
-  } else {
+  }  else {
     return;
   }
 }
 
-function showShoppingList() {
-  h.innerHTML = "Shopping List";
-  fields.style.visibility = "";
-  title.style.height = "220px";
-  deleteBody();
-  if (shoppingList.length > 0) {
+function clickButtons(event) {     
+  let el = event.target.parentNode;
+  let el1 = el.parentNode;
+  let index = el1.firstChild.innerHTML - 1;
+  if (!event.target.classList.contains("delete-button") && !event.target.classList.contains("edit-button") 
+  	&& !event.target.classList.contains("checkbox")) {
+    return;	
+  } else if (event.target.classList.contains("delete-button")) {
+    el1.parentNode.removeChild(el1);
+    delList.push(shoppingList[index]);
+    shoppingList.splice(index, 1);
+    deleteBody();
     fillTable(shoppingList);
-  } else {
-  alert("Shopping list is empty");
-  }
-  countTotal(shoppingList);
-  return;
-}
-
-function showDeletedList() {
-  h.innerHTML = "Deleted Items";
-  hr.style.visibility = "hidden";
-  fields.style.visibility = "hidden";
-  title.style.height = "120px";
-  deleteBody();
-  if (delList.length > 0) {
-    fillTable(delList);
-    const editButton = document.querySelectorAll(".edit-button");
-    const deleteButton = document.querySelectorAll(".delete-button")
-    for (let i = 0; i < editButton.length; i++) {
-      editButton[i].style.visibility = "hidden";
-      deleteButton[i].classList.remove("delete-button");
-      deleteButton[i].classList.add("remove-del");
-    }  
-  } else {
-    alert('List "Deleted" is empty');
-  }
-  countTotal(delList);
-  return;
-}
-
-function showDoneList() {
-  h.innerHTML = "Done Items";
-  hr.style.visibility = "hidden";
-  fields.style.visibility = "hidden";
-  title.style.height = "120px";
-  deleteBody();
-  if (doneList.length > 0) {
-    fillTable(doneList);
-    const editButton = document.querySelectorAll(".edit-button");
-    const deleteButton = document.querySelectorAll(".delete-button")
-    for (let i = 0; i < editButton.length; i++) {
-      editButton[i].style.visibility = "hidden";
-      deleteButton[i].classList.remove("delete-button")
-      deleteButton[i].classList.add("remove-done");
+    itemsField.value = quantField.value = priceField.value = null;
+    updateButton.style.display = "none";
+    addButton.style.display = 'inline';
+	} else if (event.target.classList.contains("edit-button")) {
+    for (let i = 0; i < table.rows.length; i++) {
+      const row = table.rows[i];
+      if (row != el1) {
+        row.style.backgroundColor = '';
+      } else {
+        row.cells[1].children[0].checked = true;
+      }
     }
-  } else {
-    alert('"Done list items" is empty');
-  }
-  countTotal(doneList);
-  return;
+      el1.style.backgroundColor = "#abdde5";
+      updateButton.style.display = 'inline';
+      addButton.style.display = "none";
+      updateItemIndex = index;
+      itemsField.value = shoppingList[index].item;
+	    quantField.value = shoppingList[index].quantity;
+      priceField.value = shoppingList[index].price;
+    } else if(event.target.classList.contains("checkbox")) {
+      event.target.checked = true;
+      el1.parentNode.removeChild(el1);
+      doneList.push(shoppingList[index]);
+      shoppingList.splice(index, 1);	
+      deleteBody();
+      fillTable(shoppingList);
+      updateButton.style.display = "none";
+      addButton.style.display = 'inline';
+    } else {
+      return;
+    }
+	countTotal(shoppingList);
 }
 
 function fillSection(arr) {
   const rows = table.lastChild;
   for (let i = 0; i < arr.length; i++) {
-    rows.cells[0].innerHTML = i + 1;
-    rows.cells[2].innerHTML = arr[i].item;
-    rows.cells[3].innerHTML = arr[i].quantity;
-    rows.cells[4].innerHTML = arr[i].price;
-  } 
+    if(typeof +arr[i].price !== "number") {
+      throw new TypeError("The entered price is not a number", "main.js", 196);
+      return;
+    } else {
+      rows.cells[0].innerHTML = i + 1;
+      rows.cells[2].innerHTML = arr[i].item;
+      rows.cells[3].innerHTML = arr[i].quantity;
+      rows.cells[4].innerHTML = arr[i].price;
+    }
+  }  
   countTotal(shoppingList);
 }
 
 function countTotal(arr) {
   let sum = 0;
   for (let i = 0; i < arr.length; i++) {
-  	sum += +arr[i].price;
+    sum += +arr[i].price;
   }
   let total = document.querySelector(".total-cell");
-  total.innerHTML = sum;
+  total.innerHTML = sum.toFixed(2);
 }
 
 function addItems() {
@@ -223,8 +258,7 @@ function addItems() {
     "quantity": "",
     "price": ""
   };
-
-  if (itemsField.value && quantField.value && priceField.value) {
+  if (isNumeric(priceField.value))  {
     itemNew.item = itemsField.value;
     itemNew.quantity = quantField.value;
     itemNew.price = priceField.value;
@@ -232,8 +266,10 @@ function addItems() {
     createSection();
     fillSection(shoppingList);
     itemsField.value = quantField.value = priceField.value = null;
+  } else if (!itemsField.value || !quantField.value ||!priceField.value) {
+    alert("Some fields not filled");
   } else {
-    alert("Please, fill all fields");
+    alert("Price value is not a number");
   }
 }
 
@@ -280,4 +316,19 @@ function updateItems() {
   itemsField.value = quantField.value = priceField.value = null;
 }
 
+function isNumeric(n) {
+  return !isNaN(parseFloat(n)) && isFinite(n);
+}
 
+let sShop = JSON.stringify(shoppingList);
+localStorage.setItem("shoppingList", sShop);
+let sDel = JSON.stringify(delList);
+localStorage.setItem("delList", sDel);
+let sDone = JSON.stringify(doneList)
+localStorage.setItem("doneList", sDone);
+
+let restoreShoppingList = JSON.parse(localStorage.getItem("shoppingList"));
+let restoreDelList = JSON.parse(localStorage.getItem("delList"));
+let restoreDoneList = JSON.parse(localStorage.getItem("doneList"));
+console.log(sShop);
+console.log(restoreShoppingList);
