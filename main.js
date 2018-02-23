@@ -1,7 +1,7 @@
 const addButton = document.querySelector(".add");
 const updateButton = document.querySelector(".update");
-const table = document.querySelector('table');
-const menu = document.querySelector(".menu")
+const table = document.querySelector("table");
+const menu = document.querySelector(".menu");
 const h = document.querySelector("h1");
 const hr = document.querySelector("hr");
 const title = document.querySelector(".title");
@@ -32,16 +32,17 @@ let restoreDelList = JSON.parse(localStorage.getItem("delList"));
 let restoreDoneList = JSON.parse(localStorage.getItem("doneList"));
 
 
-if (localStorage.getItem('shoppingList') !== null) {
+if (localStorage.getItem("shoppingList") !== null) {
   shoppingList = restoreShoppingList;
   fillTable(shoppingList);
+  countTotal(shoppingList);
 }
 
-if (localStorage.getItem('delList') !== null) {
+if (localStorage.getItem("delList") !== null) {
   delList = restoreDelList;
 }
 
-if (localStorage.getItem('doneList') !== null) {
+if (localStorage.getItem("doneList") !== null) {
   doneList = restoreDoneList;
 }
 
@@ -50,7 +51,6 @@ function createSection() {
   const th = document.querySelectorAll("th");
   table.appendChild(tr);
   tr.classList.add("newTr");
-
   for (let i = 0; i < th.length; i++) {
     let td = document.createElement("td");
     tr.appendChild(td);
@@ -60,11 +60,11 @@ function createSection() {
   input.setAttribute("type", "checkbox");
   input.classList.add("checkbox");
   tr.cells[1].appendChild(input);
+
   if (currentTable == "done" || currentTable == "deleted") {
     input.checked = true;
     input.classList.toggle("checkbox");
   }
-
 
   if (currentTable == "list") {
     const editButton = document.createElement("button");
@@ -77,9 +77,10 @@ function createSection() {
   const delButton = document.createElement("button");
   delButton.setAttribute("type", "button");
   delButton.innerHTML = ("×");
-  if (currentTable == 'done') {
+
+  if (currentTable == "done") {
     delButton.classList.add("remove-done");
-  } else if (currentTable == 'deleted') {
+  } else if (currentTable == "deleted") {
     delButton.classList.add("remove-del");
   } else {
     delButton.classList.add("delete-button");
@@ -104,6 +105,7 @@ function clickMenuButtons(event) {
   let a = document.querySelectorAll("a");
   for (let i = 0; i < a.length; i++) {
     let link = a[i];
+
       if (link != elem) {
        link.classList.remove("hover");
       }
@@ -113,12 +115,13 @@ function clickMenuButtons(event) {
 
 function showShoppingList() {
 
-  currentTable = 'list'
+  currentTable = "list";
   h.innerHTML = "Shopping List";
   hr.style.visibility = "";
   fields.style.visibility = "";
-  title.style.height = "220px";
+  title.style.height = "270px";
   deleteBody();
+
   if (shoppingList.length > 0) {
     fillTable(shoppingList);
   }   
@@ -128,12 +131,13 @@ function showShoppingList() {
 
 function showDeletedList() {
 
-  currentTable = 'deleted';
+  currentTable = "deleted";
   h.innerHTML = "Deleted Items";
   hr.style.visibility = "hidden";
   fields.style.visibility = "hidden";
-  title.style.height = "120px";
+  title.style.height = "180px";
   deleteBody();
+
   if (delList.length > 0) {
     fillTable(delList);
     const editButton = document.querySelectorAll(".edit-button");
@@ -151,12 +155,13 @@ function showDeletedList() {
 }
 
 function showDoneList() {
-  currentTable = 'done';
+  currentTable = "done";
   h.innerHTML = "Done Items";
   hr.style.visibility = "hidden";
   fields.style.visibility = "hidden";
-  title.style.height = "120px";
+  title.style.height = "180px";
   deleteBody();
+
   if (doneList.length > 0) {
     fillTable(doneList);
     const editButton = document.querySelectorAll(".edit-button");
@@ -178,6 +183,7 @@ function showDoneList() {
 function clickDelete(event) {
   let elem = event.target.parentNode.parentNode;
   let index = elem.firstChild.innerHTML - 1;
+
   if(!event.target.classList.contains("remove-done") && !event.target.classList.contains("remove-del")) {
     return;
   } else if(event.target.classList.contains("remove-done")) {
@@ -205,6 +211,7 @@ function clickButtons(event) {
   let el = event.target.parentNode;
   let el1 = el.parentNode;
   let index = el1.firstChild.innerHTML - 1;
+
   if (!event.target.classList.contains("delete-button") && !event.target.classList.contains("edit-button") 
   	&& !event.target.classList.contains("checkbox")) {
     return;	
@@ -220,18 +227,21 @@ function clickButtons(event) {
     fillTable(shoppingList);
     itemsField.value = quantField.value = priceField.value = null;
     updateButton.style.display = "none";
-    addButton.style.display = 'inline';
+    addButton.style.display = "inline";
 	} else if (event.target.classList.contains("edit-button")) {
     for (let i = 0; i < table.rows.length; i++) {
       const row = table.rows[i];
       if (row != el1) {
-        row.style.backgroundColor = '';
+        row.style.backgroundColor = "";
       } else {
         row.cells[1].children[0].checked = true;
       }
     }
+      itemsField.style.color = "#212529";
+      quantField.style.color = "#212529";
+      priceField.style.color = "#212529";
       el1.style.backgroundColor = "#abdde5";
-      updateButton.style.display = 'inline';
+      updateButton.style.display = "inline";
       addButton.style.display = "none";
       updateItemIndex = index;
       itemsField.value = shoppingList[index].item;
@@ -249,7 +259,8 @@ function clickButtons(event) {
       deleteBody();
       fillTable(shoppingList);
       updateButton.style.display = "none";
-      addButton.style.display = 'inline';
+      addButton.style.display = "inline";
+      itemsField.value = quantField.value = priceField.value = null;
     } else {
       return;
     }
@@ -282,11 +293,12 @@ function addItems() {
     "quantity": "",
     "price": ""
   };
-  if (!isNumeric(priceField.value))  {
-    alert("Price value is not a number");
-    return;
-  } else if (!itemsField.value || !quantField.value ||!priceField.value) {
+
+  if (!itemsField.value || !quantField.value ||!priceField.value) {
     alert("Some fields not filled");
+    return;
+  } else if (!isNumeric(priceField.value))  {
+    alert("Price value is not a number");
     return;
   } else {
     itemNew.item = itemsField.value;
@@ -314,7 +326,7 @@ function fillTable(arr) {
 
 function deleteBody() {
   const el = document.querySelectorAll(".newTr");
-  for (var i = 0; i < el.length; i++) {
+  for (let i = 0; i < el.length; i++) {
   	el[i].remove();
   }
 }

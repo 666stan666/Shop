@@ -12,8 +12,9 @@ a {
 
 
 table {
-	border-spacing: 0;
 	width: 600px;
+	border-spacing: 0;
+	min-width: 600px;
 	margin-top: 30px;
 	font-size: 0.8em;
 }
@@ -56,36 +57,40 @@ table td:nth-last-child(1) {
 }
 
 .row {
-	width: 1200px;
+    display: flex;
+	flex-direction: row;
+	justify-content: center;
+	align-items: flex-start;
+	margin: 0 auto; 
+	width: 80%;
+	height: 50%:;
 	font-family: 'Nunito', sans-serif;
-	margin: auto;
-	margin-left: 120px;
-	display: inline-block;
-	position: absolute;
 }
 
-.container { 
-	display: inline-block;
-	position: relative;
+.container {
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: flex-start;
 	margin-left: 30px;
 	margin-top: 15px;
-	width: 600px;
-	vertical-align: top;
-
+    width: 650px;
 }
 
 .menu {
 	height: 220px;
+	width: 350px;
+	min-width: 180px;
 	padding-left: 5px;
 	display: inline-block;
-	width: 300px;
-	position: relative;
 	vertical-align: top;
 }
 
 .title {
+	width: 600px;
+	box-sizing: border-box;
 	background: #e9ecef;
-	height: 220px;
+	height: 270px;
 	font-size: 110%;
 	border-radius: 5px;
 	padding: 50px 30px 10px 30px;
@@ -100,8 +105,6 @@ table td:nth-last-child(1) {
 	color: #878787;
 	border: none;
 }
-
-
 
 .item {
 	color: #007bff;
